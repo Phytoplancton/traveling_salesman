@@ -49,7 +49,6 @@ impl Data {
                 return false;
             }
         }
-        self.update_distcs();
         self.next_neightbour.next()
     }
 
@@ -98,6 +97,7 @@ impl Data {
                 {min_idx + 1} else {min_idx};
             self.connections.insert(new_index, elem);
 
+            self.reset_distcs();
             self.next_neightbour.reset();
             return true;
         }

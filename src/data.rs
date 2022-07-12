@@ -82,6 +82,14 @@ impl Data {
         self
     }
 
+    pub fn reset_distcs(&mut self) -> &Data {
+        self.distcs = None;
+        self.sq_distcs = None;
+        self.total_distc = None;
+
+        self
+    }
+
     pub fn get_distcs(&mut self) -> &Vec<i32> {
         if let None = self.distcs {
             self.fill_distcs();            

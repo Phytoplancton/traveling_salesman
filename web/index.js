@@ -52,8 +52,8 @@ const solve_loop = () => {
     
 }
 
-// solve();
+solve_loop();
 
-two_opt();
+// two_opt();
 
 // next_ngbr();

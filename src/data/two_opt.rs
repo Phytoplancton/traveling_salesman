@@ -4,6 +4,7 @@ use crate::data::Data;
 use wasm_bindgen::prelude::*;
 use rev_slice::SliceExt;
 
+
 pub struct TwoOpt {
     cnctn_idx_1: usize,
     cnctn_idx_2: usize,
@@ -53,14 +54,12 @@ impl TwoOpt {
 
 #[wasm_bindgen]
 impl Data {
-
     pub fn two_opt_mut_step(&mut self) -> bool {
         while !self.two_opt_step() {
             if !self.two_opt.next() {
                 return false;
             }
         }
-        self.update_distcs();
         self.two_opt.next()
     }
 
@@ -89,6 +88,8 @@ impl Data {
             new_cnctns.extend(&self.connections[y..]);
 
             self.connections = new_cnctns;
+
+            self.reset_distcs();
             self.two_opt.reset();
             
             return true;
