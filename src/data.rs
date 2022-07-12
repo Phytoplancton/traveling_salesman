@@ -1,10 +1,12 @@
 mod two_opt;
 mod cast_to_num;
 mod next_neightbour;
+mod heatshrink;
 
 use cast_to_num::CastToNum;
 use two_opt::TwoOpt;
 use next_neightbour::NextNeightbour;
+use heatshrink::Heatshrink;
 
 use wasm_bindgen::prelude::*;
 use rand::{self, Rng};
@@ -24,6 +26,7 @@ pub struct Data {
     distcs: Option<Vec<i32>>,
     two_opt: TwoOpt,
     next_neightbour: NextNeightbour,
+    heatshrink: Heatshrink,
 }
 
 #[wasm_bindgen]
@@ -40,6 +43,9 @@ impl Data {
         TwoOpt::new(point_cnt);
         let next_neightbour = 
         NextNeightbour::new(point_cnt);
+        let heatshrink = 
+        Heatshrink::new(point_cnt);       
+        
         let mut data = Data {
             width,
             height, 
@@ -51,6 +57,8 @@ impl Data {
             distcs: None,
             two_opt,
             next_neightbour,
+            heatshrink,
+
         }; 
         data.fill_points_rand();
         log!("data created!");
@@ -107,6 +115,7 @@ impl Data {
         self.distc_pnts(self.two_points(idx_1, idx_2))
     }
     
+    /// index mod number of points
     pub fn index<T: CastToNum>(&self, a: T) -> usize {
         self.fast_mod(a.to_i32(), self.point_cnt as i32)
     }
