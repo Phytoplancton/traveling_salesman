@@ -1,6 +1,6 @@
 
 use crate::macros::log;
-use crate::data::Data;
+use crate::body::data::Data;
 use wasm_bindgen::prelude::*;
 use rev_slice::SliceExt;
 
@@ -14,7 +14,8 @@ pub struct TwoOpt {
 }
 
 impl TwoOpt {
-    pub fn new(pnt_cnt: u16) -> TwoOpt {
+    pub fn new(data: &Data) -> TwoOpt {
+        let pnt_cnt = data.pnt_cnt;
         let max_steps 
             = (pnt_cnt as i32) * (pnt_cnt as i32 + 1) / 2;
         TwoOpt { 

@@ -1,5 +1,6 @@
 
-use std::vec;
+use std::vec;  
+use crate::body::data::Data;
 
 use wasm_bindgen::prelude::*;
 
@@ -9,7 +10,8 @@ pub struct Heatshrink {
 }
 
 impl Heatshrink {
-    pub fn new(pnt_cnt: u16) -> Heatshrink {
+    pub fn new(data: &Data) -> Heatshrink {
+        let pnt_cnt = data.pnt_cnt;
         Heatshrink {
             distcs_to_border: None,
             pnt_cnt

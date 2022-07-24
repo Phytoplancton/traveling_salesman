@@ -1,16 +1,10 @@
-mod two_opt;
 mod cast_to_num;
-mod next_neightbour;
-mod heatshrink;
 
 use cast_to_num::CastToNum;
-use two_opt::TwoOpt;
-use next_neightbour::NextNeightbour;
-use heatshrink::Heatshrink;
-
 use wasm_bindgen::prelude::*;
 use rand::{self, Rng};
 use crate::settings;
+use std::cmp;
 use crate::macros::log;
 
 
@@ -18,50 +12,29 @@ use crate::macros::log;
 pub struct Data {
     pub width: i32,
     pub height: i32,
-    pub point_cnt: u16,
+    pub pnt_cnt: u16,
     total_distc: Option<i32>,
     points: Vec<[i32; 2]>,
     connections: Vec<u16>,
     sq_distcs: Option<Vec<i32>>,
     distcs: Option<Vec<i32>>,
-    two_opt: TwoOpt,
-    next_neightbour: NextNeightbour,
-    heatshrink: Heatshrink,
 }
 
 #[wasm_bindgen]
 impl Data {
-    pub fn new(width: i32, height: i32, point_cnt: u16) -> Data {
-        log!("new data");
-        if settings::MARGIN * 2 > width 
-            || settings::MARGIN * 2 > height {
-            log!("window too small!");
-            panic!("window too small!");
-        }
+    pub fn new(width: i32, height: i32, pnt_cnt: u16) -> Data {
 
-        let two_opt = 
-        TwoOpt::new(point_cnt);
-        let next_neightbour = 
-        NextNeightbour::new(point_cnt);
-        let heatshrink = 
-        Heatshrink::new(point_cnt);       
-        
         let mut data = Data {
             width,
             height, 
-            point_cnt,
+            pnt_cnt,
             total_distc: None,
             points: Vec::new(),
             connections: Vec::new(),
             sq_distcs: None,
             distcs: None,
-            two_opt,
-            next_neightbour,
-            heatshrink,
-
         }; 
         data.fill_points_rand();
-        log!("data created!");
         data
     }
 
@@ -76,7 +49,10 @@ impl Data {
     pub fn get_total_distc(&mut self) -> i32 {
         match self.total_distc {
             Some(d) => d,
-            None => self.fill_total_distc().total_distc.unwrap()
+            None => self
+                .fill_total_distc()
+                .total_distc
+                .unwrap()
         }
     }
 }
@@ -117,7 +93,7 @@ impl Data {
     
     /// index mod number of points
     pub fn index<T: CastToNum>(&self, a: T) -> usize {
-        self.fast_mod(a.to_i32(), self.point_cnt as i32)
+        self.fast_mod(a.to_i32(), self.pnt_cnt as i32)
     }
 
     /// takes connection indices as arguments
@@ -157,13 +133,18 @@ impl Data {
         let mut rng = rand::thread_rng();
         self.points = [].to_vec();
         self.connections = [].to_vec();
-        for i in 0..self.point_cnt {
+        let min_size = 
+            cmp::min(self.width, self.height);
+        let margin = 
+            (min_size as f32 * settings::MARGIN_FCTR) as i32;
+
+        for i in 0..self.pnt_cnt {
             self.points.push(
                 [
                     rng.gen_range(
-                        settings::MARGIN..self.width - settings::MARGIN),
+                        margin..self.width - margin),
                     rng.gen_range(
-                        settings::MARGIN..self.height - settings::MARGIN)
+                        margin..self.height - margin)
                 ]
             );
             self.connections.push(i);
@@ -174,7 +155,7 @@ impl Data {
 
     fn fill_sq_distcs(&mut self) -> &Data{
         let mut sq_distcs = Vec::new();
-        for i in 0..self.point_cnt as usize{
+        for i in 0..self.pnt_cnt as usize{
             let j = self.index(i + 1);
             sq_distcs.push(
                 self.distc_sq(

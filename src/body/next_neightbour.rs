@@ -1,5 +1,5 @@
 
-use crate::data::Data;
+use crate::body::data::Data;
 use crate::macros::log;
 use wasm_bindgen::prelude::*;
 
@@ -12,7 +12,8 @@ pub struct NextNeightbour {
 }
 
 impl NextNeightbour {
-    pub fn new(pnt_cnt: u16) -> NextNeightbour{
+    pub fn new(data: &Data) -> NextNeightbour{
+        let pnt_cnt = data.pnt_cnt;
         NextNeightbour {
             cnctn_idx: 0,
             pnt_cnt,
@@ -64,7 +65,7 @@ impl Data {
 
         let mut len_diffs = Vec::new();
 
-        for i in 0..self.point_cnt as usize{
+        for i in 0..self.pnt_cnt as usize{
             if i == cnctn_idx || self.index(i + 1) == cnctn_idx {
             len_diffs.push(0);
                 continue;

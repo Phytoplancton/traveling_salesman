@@ -1,4 +1,4 @@
 
 //points
     //position
-    pub const MARGIN: i32 = 100;
+    pub const MARGIN_FCTR: f32 = 0.1;
