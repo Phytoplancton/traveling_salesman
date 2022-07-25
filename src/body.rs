@@ -8,11 +8,14 @@ use next_neightbour::NextNeightbour;
 use heatshrink::Heatshrink;
 use data::Data;
 
+use wasm_bindgen::prelude::*;
+
+#[wasm_bindgen]
 pub struct Body {
-    data: Data,
-    two_opt: TwoOpt,
-    next_neightbour: NextNeightbour,
-    heatshrink: Heatshrink,
+    pub data: Data,
+    pub two_opt: TwoOpt,
+    pub next_neightbour: NextNeightbour,
+    pub heatshrink: Heatshrink,
 }
 
 

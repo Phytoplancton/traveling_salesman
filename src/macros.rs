@@ -10,3 +10,16 @@ macro_rules! log {
 }
 
 pub(crate) use log;
+
+macro_rules! min {
+    ($x: expr) => ($x);
+    ($x: expr, $($z: expr),+) => {{
+        let y = min!($($z),*);
+        if $x < y {
+            $x
+        } else {
+            y
+        }
+    }}
+}
+pub(crate) use min;

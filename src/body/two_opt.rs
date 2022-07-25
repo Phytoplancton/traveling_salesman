@@ -4,7 +4,7 @@ use crate::body::data::Data;
 use wasm_bindgen::prelude::*;
 use rev_slice::SliceExt;
 
-
+#[wasm_bindgen]
 pub struct TwoOpt {
     cnctn_idx_1: usize,
     cnctn_idx_2: usize,
@@ -13,9 +13,10 @@ pub struct TwoOpt {
     max_steps: i32,
 }
 
+///self manipulation
 impl TwoOpt {
     pub fn new(data: &Data) -> TwoOpt {
-        let pnt_cnt = data.pnt_cnt;
+        let pnt_cnt = data.pnt_cnt();
         let max_steps 
             = (pnt_cnt as i32) * (pnt_cnt as i32 + 1) / 2;
         TwoOpt { 
@@ -51,47 +52,44 @@ impl TwoOpt {
     }
 }
 
-
-
+///data manipulation
 #[wasm_bindgen]
-impl Data {
-    pub fn two_opt_mut_step(&mut self) -> bool {
-        while !self.two_opt_step() {
-            if !self.two_opt.next() {
+impl TwoOpt {
+    pub fn mut_step(&mut self, data: &mut Data) -> bool {
+        while !self.step(data) {
+            if !self.next() {
                 return false;
             }
         }
-        self.two_opt.next()
+        self.next()
     }
 
-    pub fn complete_two_opt(&mut self) {
-        while self.two_opt_step() {};
+    pub fn complete(&mut self, data: &mut Data) {
+        while self.step(data) {};
     }
 }
-
-impl Data {
+impl TwoOpt {
     /// return if mutated connections
-    fn two_opt_step(&mut self) -> bool {
-        let a = self.two_opt.cnctn_idx_1;
+    fn step(&mut self, data: &mut Data) -> bool {
+        let a = self.cnctn_idx_1;
         let b = a + 1;
-        let x = self.two_opt.cnctn_idx_2;
-        let y = self.index(x + 1);
+        let x = self.cnctn_idx_2;
+        let y = data.index(x + 1);
 
         let current_length = 
-            self.get_distcs()[a] + self.get_distcs()[x];
+            data.distcs()[a] + data.distcs()[x];
         let new_length = 
-            self.distc_idx(a, x) 
-            + self.distc_idx(b, y);
+            data.distc_idx(a, x) 
+            + data.distc_idx(b, y);
         if new_length < current_length {
             let mut new_cnctns = Vec::new();
-            new_cnctns.extend(&self.connections[0..=a]);
-            new_cnctns.extend(self.connections[b..=x].rev());
-            new_cnctns.extend(&self.connections[y..]);
+            new_cnctns.extend(&data.connections()[0..=a]);
+            new_cnctns.extend(data.connections()[b..=x].rev());
+            new_cnctns.extend(&data.connections()[y..]);
 
-            self.connections = new_cnctns;
+            data.set_connections(new_cnctns);
 
-            self.reset_distcs();
-            self.two_opt.reset();
+            self.reset();
             
             return true;
         }

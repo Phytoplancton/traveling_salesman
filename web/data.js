@@ -14,12 +14,12 @@ let cnctns;
 const updatePoints = () => {
     points = new Uint32Array(
         wasm_obj.memory.buffer, 
-        Data.get_points(),
+        Data.get_points_ptr(),
         Data.point_cnt * 2
     )
     cnctns = new Uint16Array(
         wasm_obj.memory.buffer,
-        Data.get_connections(),
+        Data.get_connections_ptr(),
         Data.point_cnt
     )
 }
